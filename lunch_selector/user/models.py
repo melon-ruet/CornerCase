@@ -15,4 +15,4 @@ class SelectorUser(AbstractUser):
         (EMPLOYEE, _("Employee")),
         (RESTAURANT_MANAGER, _("Restaurant manager")),
     )
-    user_type = models.CharField(verbose_name=_("User Type"), choices=USER_TYPES)
+    user_type = models.CharField(verbose_name=_("User Type"), max_length=30, choices=USER_TYPES)
