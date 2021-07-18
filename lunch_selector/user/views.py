@@ -13,9 +13,3 @@ class UserCreateView(generics.CreateAPIView):
     """User creation DRF view"""
     serializer_class = UserSerializer
     permission_classes = [SuperuserPermission]
-
-    def create(self, request, *args, **kwargs):
-        """User creation logics"""
-        response = super().create(request, *args, **kwargs)
-        logger.info(f"Created user with username , type ")
-        return response
