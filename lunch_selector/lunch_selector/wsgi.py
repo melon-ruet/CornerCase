@@ -1,5 +1,5 @@
 """
-WSGI config for MeanuSelector project.
+WSGI config for lunch_selector project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

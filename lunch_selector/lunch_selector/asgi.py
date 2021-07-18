@@ -1,5 +1,5 @@
 """
-ASGI config for MeanuSelector project.
+ASGI config for lunch_selector project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 

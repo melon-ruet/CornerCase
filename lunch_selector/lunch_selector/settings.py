@@ -51,7 +51,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "MeanuSelector.urls"
+ROOT_URLCONF = "lunch_selector.urls"
 
 TEMPLATES = [
     {
