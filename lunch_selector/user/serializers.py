@@ -58,7 +58,7 @@ class UserSerializer(serializers.ModelSerializer):
         """Create user after validation all"""
         validated_data.pop("confirm_password")
         user = UserModel.objects.create_user(**validated_data)
-        logger.info("User created: %s", user.username)
+        logger.info(f"User created: {user.username}")
         return user
 
     class Meta:
