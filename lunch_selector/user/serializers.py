@@ -65,5 +65,6 @@ class UserSerializer(serializers.ModelSerializer):
         model = SelectorUser
         validators = [PasswordValidator()]
         fields = (
-            "id", "username", "first_name", "last_name", "email", "password", "confirm_password"
+            "id", "username", "first_name", "last_name", "email",
+            "password", "confirm_password", "user_type"
         )
