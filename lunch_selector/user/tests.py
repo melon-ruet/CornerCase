@@ -33,7 +33,7 @@ class UserSerializerTest(TestCase):
             serializer = UserSerializer(data=_data)
             self.assertEqual(serializer.is_valid(), False)
             self.assertRaisesRegex(
-                ValidationError, f"{f'{field}': [ErrorDetail(string='This field is required.', code='required')]}",
+                ValidationError, f"{field}.*?This field is required",
                 serializer.is_valid, raise_exception=True
             )
 
