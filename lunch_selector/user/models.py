@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AbstractUser
 
 
-class MenuSelectorUser(AbstractUser):
+class SelectorUser(AbstractUser):
     """Custom model for additional fields"""
     ADMIN = "ADMIN"
     EMPLOYEE = "EMPLOYEE"
