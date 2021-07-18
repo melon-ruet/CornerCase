@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "user"
 ]
+AUTH_USER_MODEL = "user.MenuSelectorUser"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
