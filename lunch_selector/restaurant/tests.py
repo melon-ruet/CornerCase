@@ -1,3 +1,4 @@
+import copy
 import datetime
 
 from django.core.exceptions import ValidationError
@@ -63,38 +64,37 @@ class RestaurantSerializerTest(TestCase):
         self.employee_instance.save()
 
     def test_required_fields(self):
-        serializer = RestaurantSerializer(data={})
-        self.assertEqual(serializer.is_valid(), False)
-        self.assertRaisesRegex(
-            DrfValidationError, "name.*?This field is required",
-            serializer.is_valid, raise_exception=True
-        )
-
-    def test_context(self):
-        serializer = RestaurantSerializer(
-            data={"name": "test_restaurant"}
-        )
-        self.assertEqual(serializer.is_valid(), True)
-        self.assertRaises(KeyError, serializer.save)
+        fields = ["name", "manager"]
+        valid_data = {
+            "name": "test_restaurant",
+            "manager": self.manager_instance.id
+        }
+        for field in fields:
+            _data = copy.deepcopy(valid_data)
+            _data.pop(field)
+            serializer = RestaurantSerializer(data=_data)
+            self.assertEqual(serializer.is_valid(), False)
+            self.assertRaisesRegex(
+                DrfValidationError, f"{field}.*?This field is required",
+                serializer.is_valid, raise_exception=True
+            )
 
     def test_without_restaurant_manager(self):
-        request = APIRequestFactory().request()
-        request.user = self.employee_instance
-
         serializer = RestaurantSerializer(
-            data={"name": "test_restaurant"},
-            context={"request": request}
+            data={
+                "name": "test_restaurant",
+                "manager": self.employee_instance.id
+            }
         )
         self.assertEqual(serializer.is_valid(), True)
         self.assertRaises(ValidationError, serializer.save)
 
     def test_create_restaurant(self):
-        request = APIRequestFactory().request()
-        request.user = self.manager_instance
-
         serializer = RestaurantSerializer(
-            data={"name": "test_restaurant"},
-            context={"request": request}
+            data={
+                "name": "test_restaurant",
+                "manager": self.manager_instance.id
+            }
         )
         self.assertEqual(serializer.is_valid(), True)
         restaurant = serializer.save()
