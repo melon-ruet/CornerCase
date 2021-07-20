@@ -27,7 +27,6 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -37,6 +36,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "user",
     "restaurant",
+    "vote",
     "rest_framework.authtoken",
     "drf_yasg",
 ]
