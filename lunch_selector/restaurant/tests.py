@@ -3,8 +3,11 @@ import datetime
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.test import TestCase
+from rest_framework.exceptions import ValidationError as DrfValidationError
+from rest_framework.test import APIRequestFactory
 
 from restaurant.models import Restaurant, Menu
+from restaurant.serializers import RestaurantSerializer
 from user.models import SelectorUser
 
 
@@ -42,6 +45,60 @@ class RestaurantModelTest(TestCase):
             ValidationError, "user_type must be restaurant manager",
             restaurant.save
         )
+
+
+class RestaurantSerializerTest(TestCase):
+
+    def setUp(self):
+        self.manager_instance = SelectorUser(
+            username="manager",
+            user_type=SelectorUser.RESTAURANT_MANAGER
+        )
+        self.manager_instance.save()
+
+        self.employee_instance = SelectorUser(
+            username="employee",
+            user_type=SelectorUser.EMPLOYEE
+        )
+        self.employee_instance.save()
+
+    def test_required_fields(self):
+        serializer = RestaurantSerializer(data={})
+        self.assertEqual(serializer.is_valid(), False)
+        self.assertRaisesRegex(
+            DrfValidationError, "name.*?This field is required",
+            serializer.is_valid, raise_exception=True
+        )
+
+    def test_context(self):
+        serializer = RestaurantSerializer(
+            data={"name": "test_restaurant"}
+        )
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertRaises(KeyError, serializer.save)
+
+    def test_without_restaurant_manager(self):
+        request = APIRequestFactory().request()
+        request.user = self.employee_instance
+
+        serializer = RestaurantSerializer(
+            data={"name": "test_restaurant"},
+            context={"request": request}
+        )
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertRaises(ValidationError, serializer.save)
+
+    def test_create_restaurant(self):
+        request = APIRequestFactory().request()
+        request.user = self.manager_instance
+
+        serializer = RestaurantSerializer(
+            data={"name": "test_restaurant"},
+            context={"request": request}
+        )
+        self.assertEqual(serializer.is_valid(), True)
+        restaurant = serializer.save()
+        self.assertIsInstance(restaurant, Restaurant)
 
 
 class MenuModelTest(TestCase):
