@@ -5,10 +5,9 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.test import TestCase
 from rest_framework.exceptions import ValidationError as DrfValidationError
-from rest_framework.test import APIRequestFactory
 
 from restaurant.models import Restaurant, Menu
-from restaurant.serializers import RestaurantSerializer
+from restaurant.serializers import RestaurantSerializer, MenuSerializer
 from user.models import SelectorUser
 
 
@@ -140,3 +139,44 @@ class MenuModelTest(TestCase):
             IntegrityError, "UNIQUE constraint failed: restaurant_menu.restaurant_id, restaurant_menu.day",
             menu2.save
         )
+
+
+class MenuSerializerTest(TestCase):
+
+    def setUp(self):
+        manager_instance = SelectorUser(
+            username="manager",
+            user_type=SelectorUser.RESTAURANT_MANAGER
+        )
+        manager_instance.save()
+
+        restaurant = Restaurant(
+            name="test restaurant", manager=manager_instance
+        )
+        restaurant.save()
+
+        self.valid_menu_data = {
+            "restaurant": restaurant.id,
+            "name": "test restaurant",
+            "details": "Corn Soup\nMixed vegetables Sandwich\nRoasted Vegetables"
+        }
+
+    def test_required_fields(self):
+        fields = ["restaurant", "name", "details"]
+        for field in fields:
+            _data = copy.deepcopy(self.valid_menu_data)
+            _data.pop(field)
+            serializer = MenuSerializer(data=_data)
+            self.assertEqual(serializer.is_valid(), False)
+            self.assertRaisesRegex(
+                DrfValidationError, f"{field}.*?This field is required",
+                serializer.is_valid, raise_exception=True
+            )
+
+    def test_create_menu(self):
+        serializer = MenuSerializer(
+            data=self.valid_menu_data
+        )
+        self.assertEqual(serializer.is_valid(raise_exception=True), True)
+        menu = serializer.save()
+        self.assertIsInstance(menu, Menu)
