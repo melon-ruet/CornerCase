@@ -123,6 +123,9 @@ STATIC_URL = "/static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Test settings
+TEST_RUNNER = 'lunch_selector.test_runner.CustomTestRunner'
+
 # DRF settings
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
