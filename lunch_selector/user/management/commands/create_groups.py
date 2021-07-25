@@ -9,7 +9,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         groups = {
-            SelectorUser.ADMIN: {},
+            SelectorUser.ADMIN: Permission.objects.values_list("codename", flat=True),
             SelectorUser.RESTAURANT_MANAGER: {
                 "add_restaurant",
                 "change_restaurant",
