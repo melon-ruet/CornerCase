@@ -45,6 +45,7 @@ class Menu(models.Model):
     name = models.CharField(verbose_name=_("name"), max_length=100)
     details = models.TextField(verbose_name=_("details"), max_length=5000)
     day = models.DateField(verbose_name=_("date"), default=datetime.date.today)
+    vote_count = models.IntegerField(verbose_name=_("votes"), default=0)
 
     def __str__(self):
         return self.name
