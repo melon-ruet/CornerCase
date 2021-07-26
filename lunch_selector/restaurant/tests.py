@@ -108,30 +108,35 @@ class MenuModelTest(TestCase):
             user_type=SelectorUser.RESTAURANT_MANAGER
         )
         manager_instance.save()
-        self.restaurant = Restaurant(name="test", manager=manager_instance)
-        self.restaurant.save()
+        self.restaurant1 = Restaurant(name="restaurant1", manager=manager_instance)
+        self.restaurant1.save()
+        self.restaurant2 = Restaurant(name="restaurant2", manager=manager_instance)
+        self.restaurant2.save()
+        self.restaurant3 = Restaurant(name="restaurant3", manager=manager_instance)
+        self.restaurant3.save()
 
     def test_valid_menu(self):
         menu = Menu(
-            restaurant=self.restaurant,
+            restaurant=self.restaurant1,
             name="test menu",
             details="Corn Soup\nSalad with Chicken\nRoasted Vegetables"
         )
         menu.save()
         self.assertEqual(menu.name, "test menu")
-        self.assertEqual(menu.restaurant.id, self.restaurant.id)
+        self.assertEqual(menu.restaurant.id, self.restaurant1.id)
         self.assertEqual(menu.day, datetime.date.today())
+        self.assertEqual(menu.vote_count, 0)
 
     def test_unique_restaurant_day_menu(self):
         menu1 = Menu(
-            restaurant=self.restaurant,
+            restaurant=self.restaurant1,
             name="test menu 1",
             details="Corn Soup\nSalad with Chicken\nRoasted Vegetables"
         )
         menu1.save()
 
         menu2 = Menu(
-            restaurant=self.restaurant,
+            restaurant=self.restaurant1,
             name="test menu 2",
             details="Corn Soup\nMixed vegetables Sandwich\nRoasted Vegetables"
         )
@@ -174,9 +179,19 @@ class MenuSerializerTest(TestCase):
             )
 
     def test_create_menu(self):
-        serializer = MenuSerializer(
-            data=self.valid_menu_data
-        )
-        self.assertEqual(serializer.is_valid(raise_exception=True), True)
+        serializer = MenuSerializer(data=self.valid_menu_data)
+        self.assertEqual(serializer.is_valid(), True)
         menu = serializer.save()
         self.assertIsInstance(menu, Menu)
+
+    def test_multiple_menu_same_day(self):
+        serializer = MenuSerializer(data=self.valid_menu_data)
+        self.assertEqual(serializer.is_valid(), True)
+        serializer.save()
+
+        serializer = MenuSerializer(data=self.valid_menu_data)
+        self.assertEqual(serializer.is_valid(), False)
+        self.assertRaisesRegex(
+            AssertionError, r"You cannot call .*? on a serializer with invalid data.",
+            serializer.save
+        )
