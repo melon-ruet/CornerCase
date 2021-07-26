@@ -1,11 +1,14 @@
 import copy
 import datetime
+import json
 
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.test import TestCase
+from django.urls import reverse
 from rest_framework.exceptions import ValidationError as DrfValidationError
 
+from lunch_selector.test_utils import CustomAPITestCase
 from restaurant.models import Restaurant, Menu
 from restaurant.serializers import RestaurantSerializer, MenuSerializer
 from user.models import SelectorUser
@@ -98,6 +101,59 @@ class RestaurantSerializerTest(TestCase):
         self.assertEqual(serializer.is_valid(), True)
         restaurant = serializer.save()
         self.assertIsInstance(restaurant, Restaurant)
+
+
+class RestaurantViewsTest(CustomAPITestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.url_restaurant = reverse("restaurant-list")
+        cls.valid_data = {
+            "name": "test-restaurant",
+        }
+
+    def test_restaurant_url_without_token(self):
+        response = self.client.get(self.url_restaurant)
+        self.assertEqual(response.status_code, 401)
+        response = self.client.get(f"{self.url_restaurant}1/")
+        self.assertEqual(response.status_code, 401)
+
+    def test_non_permitted_users(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.employee_token.key}")
+        response = self.client.get(self.url_restaurant)
+        self.assertEqual(response.status_code, 403)
+        self.assertRegex(
+            json.dumps(response.data),
+            "You do not have permission to perform this action"
+        )
+
+        response = self.client.get(f"{self.url_restaurant}1/")
+        self.assertEqual(response.status_code, 403)
+
+        response = self.client.post(self.url_restaurant, data=self.valid_data)
+        self.assertEqual(response.status_code, 403)
+
+        response = self.client.put(f"{self.url_restaurant}1/", data=self.valid_data)
+        self.assertEqual(response.status_code, 403)
+
+    def test_crud_restaurant(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.manager_token.key}")
+        response = self.client.post(self.url_restaurant, data=self.valid_data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["name"], self.valid_data["name"])
+
+        response = self.client.get(self.url_restaurant)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data[0]["id"], 1)
+        self.assertEqual(response.data[0]["name"], self.valid_data["name"])
+
+        response = self.client.put(
+            f"{self.url_restaurant}{response.data[0]['id']}/",
+            data={"name": "another restaurant"}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["name"], "another restaurant")
 
 
 class MenuModelTest(TestCase):
