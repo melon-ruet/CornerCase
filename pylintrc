@@ -1,0 +1,17 @@
+[MESSAGES CONTROL]
+disable = locally-disabled,fixme,too-few-public-methods,duplicate-code,no-self-use,raise-missing-from
+
+[MASTER]
+ignore-patterns = test_?.*
+ignore=migrations
+
+[FORMAT]
+max-line-length = 90
+
+[DESIGN]
+max-statements = 24
+max-module-lines = 2000
+max-attributes=10
+
+[REPORTS]
+reports = no
