@@ -1,6 +1,7 @@
 """user app test cases"""
 import copy
 
+from django.db import IntegrityError
 from django.test import TestCase
 from rest_framework.exceptions import ValidationError
 
@@ -10,11 +11,20 @@ from .serializers import UserSerializer
 
 class SelectorUserModelTest(TestCase):
 
-    def test_user_type(self):
-        user = SelectorUser(
-            user_type=SelectorUser.ADMIN
+    def test_valid_user(self):
+        user = SelectorUser(username="test", user_type="employee")
+        user.save()
+        self.assertEqual(user.username, "test")
+        self.assertEqual(user.user_type, SelectorUser.EMPLOYEE)
+
+    def test_unique_username(self):
+        user = SelectorUser(username="test", user_type="employee")
+        user.save()
+        user2 = SelectorUser(username="test", user_type="employee")
+        self.assertRaisesRegex(
+            IntegrityError, "UNIQUE constraint failed: user_selectoruser.username",
+            user2.save
         )
-        self.assertEqual(user.user_type, user.ADMIN)
 
 
 class UserSerializerTest(TestCase):
