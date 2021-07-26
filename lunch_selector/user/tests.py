@@ -132,3 +132,11 @@ class UserViewsTest(CustomAPITestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data["username"], self.valid_data["username"])
         self.assertEqual(response.data["user_type"], self.valid_data["user_type"])
+
+    def test_user_logout(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.admin_token.key}")
+        response = self.client.post(reverse("logout"))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(reverse("logout"))
+        self.assertEqual(response.status_code, 401)
