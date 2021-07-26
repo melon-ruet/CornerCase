@@ -19,27 +19,26 @@ class CustomTestRunner(DiscoverRunner):
 class CustomAPITestCase(APITestCase):
     """Custom class for creating token for necessary users"""
 
-    @classmethod
-    def setUpClass(cls):
+    def setUp(self):
         """Override before all of test class"""
         super().setUpClass()
         from rest_framework.authtoken.models import Token
         user_model = get_user_model()
 
-        cls.admin_instance = user_model.objects.create_user(
+        self.admin_instance = user_model.objects.create_user(
             username="admin",
             user_type=user_model.ADMIN
         )
-        cls.admin_token, _ = Token.objects.get_or_create(user=cls.admin_instance)
+        self.admin_token, _ = Token.objects.get_or_create(user=self.admin_instance)
 
-        cls.manager_instance = user_model.objects.create_user(
+        self.manager_instance = user_model.objects.create_user(
             username="manager",
             user_type=user_model.RESTAURANT_MANAGER
         )
-        cls.manager_token, _ = Token.objects.get_or_create(user=cls.manager_instance)
+        self.manager_token, _ = Token.objects.get_or_create(user=self.manager_instance)
 
-        cls.employee_instance = user_model.objects.create_user(
+        self.employee_instance = user_model.objects.create_user(
             username="employee",
             user_type=user_model.EMPLOYEE
         )
-        cls.employee_token, _ = Token.objects.get_or_create(user=cls.employee_instance)
+        self.employee_token, _ = Token.objects.get_or_create(user=self.employee_instance)
