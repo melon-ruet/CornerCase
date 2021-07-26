@@ -1,10 +1,13 @@
 """user app test cases"""
 import copy
+import json
 
 from django.db import IntegrityError
 from django.test import TestCase
+from django.urls import reverse
 from rest_framework.exceptions import ValidationError
 
+from lunch_selector.test_utils import CustomAPITestCase
 from .models import SelectorUser
 from .serializers import UserSerializer
 
@@ -94,3 +97,38 @@ class UserSerializerTest(TestCase):
         )
         self.assertEqual(serializer.is_valid(), True)
         serializer.save()
+
+
+class UserViewsTest(CustomAPITestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.url = reverse("user-create")
+        cls.valid_data = {
+            "username": "test-user",
+            "password": "h@rd-p@$$w0rd",
+            "confirm_password": "h@rd-p@$$w0rd",
+            "user_type": "employee"
+        }
+
+    def test_user_create_without_token(self):
+        resp = self.client.post(self.url, data=self.valid_data)
+        self.assertEqual(resp.status_code, 401)
+        self.assertRegex(json.dumps(resp.data), "Authentication credentials were not provided.")
+
+    def test_create_user_non_admin(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.manager_token.key}")
+        response = self.client.post(self.url, data=self.valid_data)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.employee_token.key}")
+        response = self.client.post(self.url, data=self.valid_data)
+        self.assertEqual(response.status_code, 403)
+
+    def test_create_user(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.admin_token.key}")
+        response = self.client.post(self.url, data=self.valid_data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["username"], self.valid_data["username"])
+        self.assertEqual(response.data["user_type"], self.valid_data["user_type"])
