@@ -3,7 +3,7 @@ import logging
 
 from rest_framework import generics
 
-from user.permissions import SuperuserPermission
+from user.permissions import AdminPermission
 from user.serializers import UserSerializer
 
 logger = logging.getLogger(__name__)
@@ -12,4 +12,4 @@ logger = logging.getLogger(__name__)
 class UserCreateView(generics.CreateAPIView):
     """User creation DRF view"""
     serializer_class = UserSerializer
-    permission_classes = [SuperuserPermission]
+    permission_classes = [AdminPermission]

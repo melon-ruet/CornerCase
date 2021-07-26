@@ -1,15 +1,16 @@
 """All DRF permissions for different level of users"""
+from django.contrib.auth import get_user_model
 from rest_framework import permissions
 from rest_framework.permissions import DjangoModelPermissions
 
 
-class SuperuserPermission(permissions.IsAuthenticated):
-    """superuser permission checker class"""
+class AdminPermission(permissions.IsAuthenticated):
+    """admin permission checker class"""
 
     def has_permission(self, request, view):
-        """chek superuser permission"""
+        """chek admin permission"""
         has_perm = super().has_permission(request, view)
-        return has_perm and request.user.is_superuser
+        return has_perm and request.user.user_type == get_user_model().ADMIN
 
 
 class CustomDjangoModelPermissions(DjangoModelPermissions):
