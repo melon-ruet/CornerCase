@@ -1,3 +1,7 @@
+"""Create group django management commands
+Usage:
+python manage.py create_groups
+"""
 from django.contrib.auth.models import Group, Permission
 from django.core.management.base import BaseCommand
 
@@ -5,9 +9,11 @@ from user.models import SelectorUser
 
 
 class Command(BaseCommand):
+    """create_groups command class"""
     help = "Create or update user groups"
 
     def handle(self, *args, **options):
+        """create_groups command logic here"""
         groups = {
             SelectorUser.ADMIN: Permission.objects.values_list("codename", flat=True),
             SelectorUser.RESTAURANT_MANAGER: {

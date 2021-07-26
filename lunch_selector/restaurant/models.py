@@ -30,7 +30,7 @@ class Restaurant(models.Model):
         self.clean()
         super().save(force_insert, force_update, using, update_fields)
 
-    def __str__(self):
+    def __str__(self):  # pylint: disable=invalid-str-returned
         return self.name
 
 
@@ -47,8 +47,8 @@ class Menu(models.Model):
     day = models.DateField(verbose_name=_("date"), default=datetime.date.today)
     vote_count = models.IntegerField(verbose_name=_("votes"), default=0)
 
-    def __str__(self):
+    def __str__(self):  # pylint: disable=invalid-str-returned
         return self.name
 
-    class Meta:
+    class Meta:  # pylint: disable=missing-class-docstring
         unique_together = ("restaurant", "day")

@@ -42,7 +42,7 @@ class MenuViewSet(viewsets.ModelViewSet):
             return objects.filter(
                 day=datetime.datetime.today()
             )
-        elif user_type == SelectorUser.RESTAURANT_MANAGER:
+        if user_type == SelectorUser.RESTAURANT_MANAGER:
             return objects.filter(restaurant__manager=self.request.user)
         return objects.all()
 

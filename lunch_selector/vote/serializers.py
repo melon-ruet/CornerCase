@@ -16,7 +16,7 @@ class MenuVoteSerializer(serializers.ModelSerializer):
         logger.info(f"Vote given data: {validated_data}")
         return super().create(validated_data)
 
-    class Meta:
+    class Meta:  # pylint: disable=missing-class-docstring
         model = MenuVote
         fields = ("id", "menu", "day", "employee")
         read_only_fields = ("day",)

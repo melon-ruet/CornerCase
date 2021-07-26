@@ -61,12 +61,16 @@ class VoteViewSet(ModelViewSet):
         methods=["get"], detail=False,
         url_path="result", url_name="result"
     )
-    def vote_result(self, request):
+    def vote_result(self, request):  # pylint: disable=unused-argument
         """Vote result get"""
         data = cache.get(self.RESULT_CACHE_KEY, None)
         if not data:
             data = [
-                {"restaurant": menu.restaurant.name, "name": menu.name, "details": menu.details}
+                {
+                    "restaurant": menu.restaurant.name,
+                    "name": menu.name,
+                    "details": menu.details
+                }
                 for menu in self._calculate_vote_result()
             ]
             cache.set(self.RESULT_CACHE_KEY, data)

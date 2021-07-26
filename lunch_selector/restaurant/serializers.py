@@ -16,7 +16,7 @@ class RestaurantSerializer(serializers.ModelSerializer):
         logger.info(f"Restaurant creation data: {validated_data}")
         return super().create(validated_data)
 
-    class Meta:
+    class Meta:  # pylint: disable=missing-class-docstring
         model = Restaurant
         fields = ("id", "name", "manager")
         extra_kwargs = {"manager": {"write_only": True}}
@@ -30,7 +30,7 @@ class MenuSerializer(serializers.ModelSerializer):
         logger.info(f"Menu creation data: {validated_data}")
         return super().create(validated_data)
 
-    class Meta:
+    class Meta:  # pylint: disable=missing-class-docstring
         model = Menu
         fields = ("id", "restaurant", "name", "details", "day")
         extra_kwargs = {"restaurant": {"write_only": True}}

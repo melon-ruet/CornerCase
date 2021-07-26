@@ -43,5 +43,5 @@ class MenuVote(models.Model):
 
         super().save(force_insert, force_update, using, update_fields)
 
-    class Meta:
+    class Meta:  # pylint: disable=missing-class-docstring
         unique_together = ("employee", "day")

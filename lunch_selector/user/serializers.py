@@ -16,7 +16,8 @@ class PasswordValidator:
     """Password match validator"""
     message = _("{password_field} should be equal to {confirm_password_field}.")
 
-    def __init__(self, password_field="password", confirm_password_field="confirm_password",
+    def __init__(self, password_field="password",
+                 confirm_password_field="confirm_password",
                  message=None):
         self.password_field = password_field
         self.confirm_password_field = confirm_password_field
@@ -40,6 +41,7 @@ class PasswordValidator:
 
 class UserSerializer(serializers.ModelSerializer):
     """UserSerializer for creating user with a password"""
+    # pylint: disable=protected-access
     password_max_len = UserModel._meta.get_field("password").max_length
     password = serializers.CharField(
         label=_("Password"), max_length=password_max_len, write_only=True
@@ -61,7 +63,7 @@ class UserSerializer(serializers.ModelSerializer):
         logger.info(f"User created: {user.username}")
         return user
 
-    class Meta:
+    class Meta:  # pylint: disable=missing-class-docstring
         model = SelectorUser
         validators = [PasswordValidator()]
         fields = (
