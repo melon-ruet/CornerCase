@@ -1,5 +1,5 @@
 [MESSAGES CONTROL]
-disable = locally-disabled,fixme,too-few-public-methods,duplicate-code,no-self-use,raise-missing-from
+disable = too-many-ancestors,too-few-public-methods,no-self-use,logging-fstring-interpolation,no-member
 
 [MASTER]
 ignore-patterns = test_?.*
@@ -9,7 +9,7 @@ ignore=migrations
 max-line-length = 90
 
 [DESIGN]
-max-statements = 24
+max-statements = 30
 max-module-lines = 2000
 max-attributes=10
 
