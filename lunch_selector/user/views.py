@@ -3,8 +3,8 @@ import logging
 
 from rest_framework import generics
 
-from .permissions import SuperuserPermission
-from .serializers import UserSerializer
+from user.permissions import SuperuserPermission
+from user.serializers import UserSerializer
 
 logger = logging.getLogger(__name__)
 
