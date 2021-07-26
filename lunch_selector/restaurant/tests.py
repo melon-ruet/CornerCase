@@ -218,7 +218,7 @@ class MenuSerializerTest(TestCase):
 
         self.valid_menu_data = {
             "restaurant": restaurant.id,
-            "name": "test restaurant",
+            "name": "test menu",
             "details": "Corn Soup\nMixed vegetables Sandwich\nRoasted Vegetables"
         }
 
@@ -251,3 +251,66 @@ class MenuSerializerTest(TestCase):
             AssertionError, r"You cannot call .*? on a serializer with invalid data.",
             serializer.save
         )
+
+
+class MenuViewsTest(CustomAPITestCase):
+
+    def setUp(self):
+        super().setUp()
+        self.url_menu = reverse("menu-list")
+        self.restaurant = Restaurant(
+            name="test restaurant",
+            manager=self.manager_instance
+        )
+        self.restaurant.save()
+
+        self.valid_data = {
+            "restaurant": self.restaurant.id,
+            "name": "test menu",
+            "details": "Corn Soup\nMixed vegetables Sandwich\nRoasted Vegetables"
+        }
+
+    def test_menu_url_without_token(self):
+        response = self.client.get(self.url_menu)
+        self.assertEqual(response.status_code, 401)
+        response = self.client.get(f"{self.url_menu}1/")
+        self.assertEqual(response.status_code, 401)
+
+    def test_non_permitted_users(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.employee_token.key}")
+
+        response = self.client.post(self.url_menu, data=self.valid_data)
+        self.assertEqual(response.status_code, 403)
+        self.assertRegex(
+            json.dumps(response.data),
+            "You do not have permission to perform this action"
+        )
+
+        response = self.client.put(f"{self.url_menu}1/", data=self.valid_data)
+        self.assertEqual(response.status_code, 403)
+
+    def test_crud_menu(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.employee_token.key}")
+        response = self.client.get(self.url_menu)
+        self.assertEqual(response.status_code, 200)
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.manager_token.key}")
+        response = self.client.post(self.url_menu, data=self.valid_data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["name"], self.valid_data["name"])
+
+        response = self.client.get(self.url_menu)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data[0]["id"], 1)
+        self.assertEqual(response.data[0]["name"], self.valid_data["name"])
+
+        response = self.client.put(
+            f"{self.url_menu}{response.data[0]['id']}/",
+            data={
+                "restaurant": self.restaurant.id,
+                "name": "another menu",
+                "details": "Any"
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["name"], "another menu")
