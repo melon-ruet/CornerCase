@@ -135,8 +135,9 @@ class UserViewsTest(CustomAPITestCase):
 
     def test_user_logout(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.admin_token.key}")
-        response = self.client.post(reverse("logout"))
+        url = reverse("logout")
+        response = self.client.post(url)
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.post(reverse("logout"))
+        response = self.client.post(url)
         self.assertEqual(response.status_code, 401)
