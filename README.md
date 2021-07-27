@@ -6,7 +6,7 @@ restaurant each day before lunch.
 * Admin can add employees and restaurant managers
 * Restaurant managers can add their restaurants. One manager can add multiple restaurants
 * Employees can vote only one menu each day. Also they can edit their vote.
-* Can be multiple winner based on same number of vote
+* Can be multiple winners based on same number of vote
 * A restaurant can not be winner for 3 consecutive days
 * Has login and logout option
 
@@ -36,7 +36,7 @@ For unittest, django default test module and DRF test modules are used. To run a
 ```shell
 (cd lunch_selector && python manage.py test)
 ```
-### how to lint
+### How to lint
 Additional pylint is used to lint codes. A python file is used to check lint.
 ```shell
 python check_lint.py
@@ -50,7 +50,7 @@ Then for running dev server using manage.py
 python lunch_selector/manage.py runserver
 ```
 
-#### using Docker
+#### using docker
 Check `.env.dev` file for docker dev environment variables    
 
 From project root folder run this to build docker image
@@ -117,7 +117,6 @@ curl -X GET "http://127.0.0.1:8000/restaurants/" -H  "accept: application/json" 
 * To use token in swagger simply hit the endpoint `/user/token`, get the token. 
   Then click `Authorize` button on upper right of UI. Set the `value` as
   `Token <token key>` and click `Authorize`. Then all APIs can be usable from swagger UI.
-  
   
 
 ### Drawbacks
