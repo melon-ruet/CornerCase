@@ -4,14 +4,14 @@ import datetime
 from django.core.cache import cache
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework import viewsets
 
 from restaurant.models import Menu
 from user.models import SelectorUser
 from vote.serializers import MenuVoteSerializer
 
 
-class VoteViewSet(ModelViewSet):
+class MenuVoteViewSet(viewsets.ModelViewSet):
     """Vote create and update by employee"""
     serializer_class = MenuVoteSerializer
     RESULT_CACHE_KEY = "vote-result-key"
@@ -59,9 +59,9 @@ class VoteViewSet(ModelViewSet):
 
     @action(
         methods=["get"], detail=False,
-        url_path="result", url_name="result"
+        url_path="result"
     )
-    def vote_result(self, request):  # pylint: disable=unused-argument
+    def result(self, request):  # pylint: disable=unused-argument
         """Vote result get"""
         data = cache.get(self.RESULT_CACHE_KEY, None)
         if not data:
@@ -89,7 +89,10 @@ class VoteViewSet(ModelViewSet):
     def get_queryset(self):
         """Get votes based on user"""
         objects = self.serializer_class.Meta.model.objects
-        if self.request.user.user_type == SelectorUser.EMPLOYEE:
+        user_type = getattr(self.request.user, "user_type", None)
+        if user_type is None:
+            return objects.none()
+        if user_type == SelectorUser.EMPLOYEE:
             return objects.filter(
                 employee=self.request.user
             )

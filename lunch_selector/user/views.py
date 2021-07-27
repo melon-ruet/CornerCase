@@ -17,9 +17,20 @@ class UserCreateView(generics.CreateAPIView):
     permission_classes = [AdminPermission]
 
 
+class FakeLogoutSerializer:
+    """Fake serializer for drf swagger view
+    So it will not generate this log:
+    ```AssertionError: 'UserLogout' should either include a
+    `serializer_class` attribute, or override the `get_serializer_class()` method.```
+    """
+    def __call__(self, *args, **kwargs):
+        pass
+
+
 class UserLogout(generics.CreateAPIView):
     """User logout"""
     permission_classes = [IsAuthenticated]
+    serializer_class = FakeLogoutSerializer()
 
     def create(self, request, *args, **kwargs):
         """Delete user token to logout"""

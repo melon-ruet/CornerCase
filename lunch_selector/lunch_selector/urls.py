@@ -22,5 +22,5 @@ urlpatterns = [
     ),
     path("user/", include("user.urls")),
     path("restaurants/", include("restaurant.urls")),
-    path("votes", include("vote.urls")),
+    path("votes/", include("vote.urls")),
 ]
