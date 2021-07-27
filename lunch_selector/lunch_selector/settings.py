@@ -150,3 +150,48 @@ SWAGGER_SETTINGS = {
         }
     }
 }
+
+# Logging
+LOG_FILE = os.environ.get("LOG_FILE", f"{Path.home()}/.log/lunch-selector.log")
+if not os.path.exists(LOG_FILE):
+    os.makedirs(os.path.dirname(LOG_FILE))
+    with open(LOG_FILE, "w"):
+        pass
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "console": {
+            "format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s",
+        },
+        "simple": {
+            "format": "%(levelname) %(message)",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "simple"
+        },
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "formatter": "console",
+            "filename": LOG_FILE,
+        }
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+        "app": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": True,
+        }
+    }
+}
