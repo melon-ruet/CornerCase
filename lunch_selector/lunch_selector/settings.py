@@ -154,8 +154,11 @@ SWAGGER_SETTINGS = {
 # Logging
 LOG_FILE = os.environ.get("LOG_FILE", f"{Path.home()}/.log/lunch-selector.log")
 if not os.path.exists(LOG_FILE):
-    os.makedirs(os.path.dirname(LOG_FILE))
-    with open(LOG_FILE, "w"):
+    try:
+        os.makedirs(os.path.dirname(LOG_FILE))
+        with open(LOG_FILE, "w"):
+            pass
+    except FileExistsError:
         pass
 
 LOGGING = {
