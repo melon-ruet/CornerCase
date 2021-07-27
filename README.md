@@ -1,4 +1,4 @@
-##Lunch Menu Selector
+## Lunch Menu Selector
 A Django based web app with REST api. This app will help company to choose a menu from a 
 restaurant each day before lunch.
 
