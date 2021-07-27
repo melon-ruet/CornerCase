@@ -1,4 +1,5 @@
 """Voting related serializers"""
+import datetime
 import logging
 
 from rest_framework import serializers
@@ -15,6 +16,12 @@ class MenuVoteSerializer(serializers.ModelSerializer):
         """Vote to menu"""
         logger.info(f"Vote given data: {validated_data}")
         return super().create(validated_data)
+
+    def validate_menu(self, value):
+        """data validate"""
+        if value.day != datetime.datetime.today().date():
+            raise serializers.ValidationError("Menu is not from today")
+        return value
 
     class Meta:  # pylint: disable=missing-class-docstring
         model = MenuVote

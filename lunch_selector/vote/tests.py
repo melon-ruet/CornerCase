@@ -38,6 +38,15 @@ class MenuVoteSetup(TestCase):
         )
         self.menu.save()
 
+        yesterday = datetime.datetime.today().date() - datetime.timedelta(days=1)
+        self.yesterday_menu = Menu(
+            restaurant=restaurant,
+            name="test menu",
+            details="Corn Soup\nSalad with Chicken\nRoasted Vegetables",
+            day=yesterday
+        )
+        self.yesterday_menu.save()
+
         self.valid_menu_vote_data = {
             "menu": self.menu.id,
             "employee": self.employee_instance.id
@@ -97,6 +106,17 @@ class MenuVoteSerializerTest(MenuVoteSetup):
             serializer.save
         )
 
+    def test_vote_yesterday_menu(self):
+        serializer = MenuVoteSerializer(data={
+            "menu": self.yesterday_menu.id,
+            "employee": self.employee_instance.id
+        })
+        self.assertEqual(serializer.is_valid(), False)
+        self.assertRaisesRegex(
+            AssertionError, r"You cannot call .*? on a serializer with invalid data.",
+            serializer.save
+        )
+
 
 class MenuVoteViewsTest(CustomAPITestCase):
 
@@ -128,6 +148,15 @@ class MenuVoteViewsTest(CustomAPITestCase):
         )
         self.menu2.save()
 
+        yesterday = datetime.datetime.today().date() - datetime.timedelta(days=1)
+        self.yesterday_menu = Menu(
+            restaurant=restaurant1,
+            name="test menu",
+            details="Corn Soup\nSalad with Chicken\nRoasted Vegetables",
+            day=yesterday
+        )
+        self.yesterday_menu.save()
+
         self.valid_data = {
             "menu": self.menu1.id
         }
@@ -158,6 +187,18 @@ class MenuVoteViewsTest(CustomAPITestCase):
 
         response = self.client.get(f"{self.url_vote}result/", data=self.valid_data)
         self.assertEqual(response.status_code, 403)
+
+    def test_vote_yesterday_menu(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.employee_token.key}")
+        response = self.client.post(
+            self.url_vote,
+            data={"menu": self.yesterday_menu.id}
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertRegex(
+            json.dumps(response.data),
+            "Menu is not from today"
+        )
 
     def test_crud_vote(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.employee_token.key}")
