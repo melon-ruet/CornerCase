@@ -18,7 +18,10 @@ class RestaurantViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """get restaurants based on user type"""
         objects = self.serializer_class.Meta.model.objects
-        if self.request.user.user_type == SelectorUser.RESTAURANT_MANAGER:
+        user_type = getattr(self.request.user, "user_type", None)
+        if user_type is None:
+            return objects.none()
+        if user_type == SelectorUser.RESTAURANT_MANAGER:
             return objects.filter(manager=self.request.user.id)
         return objects.all()
 
