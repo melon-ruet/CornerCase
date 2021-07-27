@@ -18,7 +18,7 @@ class MenuVoteSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
     def validate_menu(self, value):
-        """data validate"""
+        """validate menu"""
         if value.day != datetime.datetime.today().date():
             raise serializers.ValidationError("Menu is not from today")
         return value
