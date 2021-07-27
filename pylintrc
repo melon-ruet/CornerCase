@@ -1,5 +1,5 @@
 [MESSAGES CONTROL]
-disable = too-many-ancestors,too-few-public-methods,no-self-use,logging-fstring-interpolation,no-member
+disable = too-many-ancestors,too-few-public-methods,no-self-use,duplicate-code,logging-fstring-interpolation,no-member
 
 [MASTER]
 ignore-patterns = test_?.*
